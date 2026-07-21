@@ -268,7 +268,7 @@
     const grid   = document.getElementById('meme-grid');
 
     chosen.forEach((num, idx) => {
-      const src  = `${MEME_FOLDER}${num}.${FILE_EXT}`;
+      const src  = `${MEME_FOLDER}${num}.jpg`;
 
       const card = document.createElement('div');
       card.className = 'meme-card';
@@ -276,6 +276,7 @@
 
       const img = document.createElement('img');
       img.src = src;
+      img.onerror = () => { img.src = `${MEME_FOLDER}${num}.jpeg`; };
       img.alt = `meme #${num}`;
       img.loading = 'lazy';
 
