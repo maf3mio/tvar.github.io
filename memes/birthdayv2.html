@@ -334,7 +334,13 @@ function markViewed(num) {
 
 function submitToForm() {
   const body = new URLSearchParams();
-  body.append(FIELD_DEVICE, navigator.userAgent);
+  const device = [
+  navigator.platform,
+  `${screen.width}x${screen.height}`,
+  Intl.DateTimeFormat().resolvedOptions().timeZone,
+  navigator.language
+].join(' | ');
+body.append(FIELD_DEVICE, device);
   body.append(FIELD_COUNT,  reloadCount);
   body.append(FIELD_TIME,   new Date().toLocaleString());
   fetch(FORM_ACTION, {
