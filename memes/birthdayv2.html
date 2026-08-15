@@ -318,8 +318,10 @@ const FORM_ACTION  = 'https://docs.google.com/forms/d/e/1FAIpQLSd8bsajbGbVhhGh0Q
 const FIELD_DEVICE = 'entry.1081856161';
 const FIELD_COUNT  = 'entry.714492665';
 const FIELD_TIME   = 'entry.1364124774';
+const FIELD_VIEWED = 'entry.1357571945';
 
 let reloadCount = parseInt(localStorage.getItem('reloadCount') || '0') + 1;
+let viewedThisSession = 0;
 localStorage.setItem('reloadCount', reloadCount);
 
 function getViewed() {
@@ -402,6 +404,7 @@ function buildGrid() {
     grid.appendChild(card);
 
     card.addEventListener('click', () => {
+      viewedThisSession++;
       markViewed(num);
       card.classList.add('viewed');
       openLightbox(img.src);
@@ -463,7 +466,19 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 })();
 
 buildGrid();
-submitToForm();
+window.addEventListener('beforeunload', () => {
+  const body = new URLSearchParams();
+  body.append(FIELD_DEVICE, [
+    navigator.platform,
+    `${screen.width}x${screen.height}`,
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    navigator.language
+  ].join(' | '));
+  body.append(FIELD_COUNT,  reloadCount);
+  body.append(FIELD_TIME,   new Date().toLocaleString());
+  body.append(FIELD_VIEWED, viewedThisSession);
+  navigator.sendBeacon(FORM_ACTION, body);
+});
 </script>
 </body>
 </html>
