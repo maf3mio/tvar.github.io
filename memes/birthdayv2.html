@@ -475,10 +475,14 @@ window.addEventListener('beforeunload', () => {
     navigator.language
   ].join(' | '));
   body.append(FIELD_COUNT,  reloadCount);
-  body.append(FIELD_TIME,   new Date().toLocaleString());
+  body.append(FIELD_TIME,   'session end | ' + new Date().toLocaleString());
   body.append(FIELD_VIEWED, viewedThisSession);
   navigator.sendBeacon(FORM_ACTION, body);
 });
+
+  buildGrid();
+  submitToForm();
+
 </script>
 </body>
 </html>
