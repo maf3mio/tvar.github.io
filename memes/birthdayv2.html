@@ -477,7 +477,8 @@ window.addEventListener('beforeunload', () => {
   body.append(FIELD_COUNT,  reloadCount);
   body.append(FIELD_TIME,   'session end | ' + new Date().toLocaleString());
   body.append(FIELD_VIEWED, viewedThisSession);
-  navigator.sendBeacon(FORM_ACTION, body);
+  const blob = new Blob([body.toString()], { type: 'application/x-www-form-urlencoded' });
+navigator.sendBeacon(FORM_ACTION, blob);
 });
 
   buildGrid();
