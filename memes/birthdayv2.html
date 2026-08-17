@@ -466,19 +466,37 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 })();
 
 buildGrid();
-window.addEventListener('beforeunload', () => {
-  const body = new URLSearchParams();
-  body.append(FIELD_DEVICE, [
+window.addEventListener('pagehide', () => {
+  const params = new URLSearchParams();
+  params.append(FIELD_DEVICE, [
     navigator.platform,
     `${screen.width}x${screen.height}`,
     Intl.DateTimeFormat().resolvedOptions().timeZone,
     navigator.language
   ].join(' | '));
-  body.append(FIELD_COUNT,  reloadCount);
-  body.append(FIELD_TIME,   'session end | ' + new Date().toLocaleString());
-  body.append(FIELD_VIEWED, viewedThisSession);
-  const blob = new Blob([body.toString()], { type: 'application/x-www-form-urlencoded' });
-navigator.sendBeacon(FORM_ACTION, blob);
+  params.append(FIELD_COUNT,  reloadCount);
+  params.append(FIELD_TIME,   'session end | ' + new Date().toLocaleString());
+  params.append(FIELD_VIEWED, viewedThisSession);
+
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden-form';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = FORM_ACTION;
+  form.target = 'hidden-form';
+  params.forEach((value, key) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
 });
 
   buildGrid();
